@@ -4,19 +4,7 @@ import { RouterView } from 'vue-router'
 
 const gempa = ref(null)
 const loading = ref(true)
-
-onMounted(async () => {
-  try {
-    const res = fetch('https://data.bmkg.go.id/DataMKG/TEWS/autogempa.json')
-    const data = (await res).json()
-    gempa.value = (await data).Infogempa.gempa
-    loading.value = false
-  } catch (err) {
-    console.log(err)
-  } finally {
-    loading.value = false
-  }
-})
+const isLogin = ref(true)
 </script>
 
 <template>
