@@ -32,7 +32,7 @@ const submit = async () => {
     const blob = await (await fetch(imagePreview.value)).blob()
     formData.append('img', blob, 'image.png')
 
-    const response = await axios({
+    await axios({
       method: 'post',
       withCredentials: true,
       url: `${env('VITE_API_ENDPOINT')}movie/store`,

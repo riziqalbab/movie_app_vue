@@ -5,6 +5,7 @@ import AddView from '@/views/AddView.vue'
 import axios from 'axios'
 import env from '@/config/env'
 import EditMovieView from '@/views/EditMovieView.vue'
+import RegisterView from '@/views/RegisterView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -25,6 +26,11 @@ const router = createRouter({
       component: AddView
     },
     {
+      path: '/register',
+      name: 'register', // Menambahkan nama untuk rute add
+      component: RegisterView
+    },
+    {
       path: '/movie/edit/:id', // Menambahkan rute untuk edit film
       name: 'edit',
       component: EditMovieView // Mengimpor komponen edit film
@@ -39,13 +45,11 @@ router.beforeEach(async (to) => {
       withCredentials: true
     })
 
-    // Jika pengguna mencoba mengakses halaman login, arahkan ke home
-    if (to.name === 'login') {
+    if (to.name === 'login' || to.name === 'login') {
       return { name: 'home' }
     }
   } catch {
-    // Jika gagal memverifikasi pengguna, arahkan ke halaman login
-    if (to.name !== 'login') {
+    if (to.name !== 'login' && to.name !== 'register') {
       return { name: 'login' }
     }
   }
