@@ -12,6 +12,8 @@ axios({
   url: `${env('VITE_API_ENDPOINT')}movie`
 }).then((res) => {
   movie.value = res.data
+
+  console.log(res.data)
 })
 </script>
 
@@ -45,7 +47,7 @@ axios({
       </header>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div v-for="i in movie" :key="i" class="bg-[#1a4d66] rounded-lg overflow-hidden">
+        <div v-for="i in movie.data" :key="i" class="bg-[#1a4d66] rounded-lg overflow-hidden">
           <img :src="`${url}${i.img}`" alt="Movie thumbnail" class="w-full h-40 object-cover" />
           <div class="p-4">
             <h3 class="font-semibold">Movie {{ i.title }}</h3>
@@ -55,10 +57,14 @@ axios({
       </div>
 
       <div class="mt-8 gap-4 flex justify-center items-center">
-        <button class="underline">Prev</button>
-        <div class="bg-green-500 h-6 w-6 items-center justify-center flex rounded-lg">1</div>
-        <div class="bg-slate-600 h-6 w-6 items-center justify-center flex rounded-lg">2</div>
-        <button class="underline">Next</button>
+        <div v-for="link in movie.links" v-bind:key="link">
+          <a
+            :href="link.url"
+            class="bg-green-500 h-6 px-3 py-4 items-center justify-center flex rounded-lg"
+          >
+            {{ link.label.replaceAll('&amp;laquo;', '').replaceAll('&amp;raquo;', '') }}
+          </a>
+        </div>
       </div>
     </div>
   </div>
