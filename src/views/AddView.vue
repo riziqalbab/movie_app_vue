@@ -1,3 +1,75 @@
+<script setup>
+import env from '@/config/env'
+import axios from 'axios'
+import { ref } from 'vue'
+
+const title = ref('')
+const year = ref('')
+const imagePreview = ref('')
+const isDragging = ref(false)
+
+const handleDrop = (e) => {
+  isDragging.value = false
+  const file = e.dataTransfer?.files[0]
+  if (file && file.type.startsWith('image/')) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      imagePreview.value = e.target?.result
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
+// const submit = async () => {
+//   console.log('fds')
+
+//   try {
+//     const response = await axios({
+//       method: 'post',
+//       withCredentials: true,
+//       url: `${env('VITE_API_ENDPOINT')}movie/store`,
+//       params: {
+//         title: title.value,
+//         year: year.value,
+//         img: imagePreview.value
+//       }
+//     })
+
+//     console.log('Response:', response.data)
+//   } catch (error) {
+//     console.error('Error:', error)
+//   }
+// }
+
+const submit = async () => {
+  try {
+    // Buat FormData untuk mengirim data termasuk gambar
+    const formData = new FormData()
+    formData.append('title', title.value)
+    formData.append('year', year.value)
+
+    // Jika menggunakan data URL (base64), mungkin server mengharapkan data binary.
+    // Jika perlu, konversi data URL menjadi blob
+    const blob = await (await fetch(imagePreview.value)).blob()
+    formData.append('img', blob, 'image.png') // `image.png` sebagai nama file
+
+    const response = await axios({
+      method: 'post',
+      withCredentials: true,
+      url: `${env('VITE_API_ENDPOINT')}movie/store`,
+      data: formData, // gunakan data, bukan params
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    console.log('Response:', response.data)
+  } catch (error) {
+    console.error('Error:', error.response ? error.response.data : error.message)
+  }
+}
+</script>
+
 <template>
   <div class="min-h-screen bg-[#0e3a4f] text-white p-8">
     <div class="max-w-4xl mx-auto">
@@ -39,7 +111,7 @@
           </div>
         </div>
 
-        <div class="w-full md:w-1/2 space-y-4">
+        <form v-on:submit.prevent="submit" class="w-full md:w-1/2 space-y-4">
           <div>
             <label for="title" class="block text-sm font-medium text-gray-400 mb-1">Title</label>
             <input
@@ -66,19 +138,13 @@
 
           <div class="flex justify-end space-x-4 mt-8">
             <button
-              @click="cancel"
-              class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
-            >
-              Cancel
-            </button>
-            <button
-              @click="submit"
+              v-on:click="submit"
               class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               Submit
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
 
@@ -93,37 +159,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref } from 'vue'
-
-const title = ref('')
-const year = ref('')
-const imagePreview = ref('')
-const isDragging = ref(false)
-
-const handleDrop = (e) => {
-  isDragging.value = false
-  const file = e.dataTransfer?.files[0]
-  if (file && file.type.startsWith('image/')) {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      imagePreview.value = e.target?.result
-    }
-    reader.readAsDataURL(file)
-  }
-}
-
-const cancel = () => {
-  // Handle cancel action (e.g., reset form or navigate back)
-  title.value = ''
-  year.value = ''
-  imagePreview.value = ''
-}
-
-const submit = () => {
-  // Handle form submission
-  console.log('Submitting:', { title: title.value, year: year.value, image: imagePreview.value })
-  // Add your submission logic here
-}
-</script>

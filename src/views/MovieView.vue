@@ -1,3 +1,20 @@
+<script setup>
+import { ref } from 'vue'
+import axios from 'axios'
+import env from '@/config/env'
+
+const movie = ref(null)
+const url = ref(env('VITE_IMAGE_ENDPOINT'))
+
+axios({
+  method: 'GET',
+  withCredentials: true,
+  url: `${env('VITE_API_ENDPOINT')}movie`
+}).then((res) => {
+  movie.value = res.data
+})
+</script>
+
 <template>
   <div class="min-h-screen bg-[#0e3a4f] text-white p-8">
     <div class="max-w-6xl mx-auto">
@@ -28,15 +45,11 @@
       </header>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div v-for="i in 8" :key="i" class="bg-[#1a4d66] rounded-lg overflow-hidden">
-          <img
-            :src="`/placeholder.svg?height=200&width=300`"
-            alt="Movie thumbnail"
-            class="w-full h-40 object-cover"
-          />
+        <div v-for="i in movie" :key="i" class="bg-[#1a4d66] rounded-lg overflow-hidden">
+          <img :src="`${url}${i.img}`" alt="Movie thumbnail" class="w-full h-40 object-cover" />
           <div class="p-4">
-            <h3 class="font-semibold">Movie {{ i }}</h3>
-            <p class="text-sm text-gray-400">2023</p>
+            <h3 class="font-semibold">Movie {{ i.title }}</h3>
+            <p class="text-sm text-gray-400">{{ i.year }}</p>
           </div>
         </div>
       </div>
