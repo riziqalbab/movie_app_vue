@@ -2,13 +2,18 @@
 import env from '@/config/env'
 import axios from 'axios'
 import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+const id = route.params.id
 
 const title = ref('')
 const year = ref('')
 const imagePreview = ref('')
 const isDragging = ref(false)
 const alertMessage = ref('')
-const alertType = ref('') // Untuk menentukan jenis alert, misalnya 'success' atau 'error'
+const alertType = ref('')
 const showAlert = ref(false)
 
 const handleDrop = (e) => {
@@ -35,7 +40,7 @@ const submit = async () => {
     const response = await axios({
       method: 'post',
       withCredentials: true,
-      url: `${env('VITE_API_ENDPOINT')}movie/store`,
+      url: `${env('VITE_API_ENDPOINT')}movie/edit/${id}`,
       data: formData,
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -68,7 +73,6 @@ const submit = async () => {
     <div class="max-w-4xl mx-auto">
       <h1 class="text-3xl font-bold mb-8">Create a new movie</h1>
 
-      <!-- Alert -->
       <div
         v-if="showAlert"
         :class="alertType === 'success' ? 'bg-green-500' : 'bg-red-500'"
