@@ -1,17 +1,29 @@
 <script setup>
+import env from '@/config/env'
+import axios from 'axios'
 import { ref } from 'vue'
 
 const email = ref('')
 const password = ref('')
-const rememberMe = ref(false)
 
 const handleSubmit = () => {
   // Handle form submission
-  console.log('Form submitted', {
-    email: email.value,
-    password: password.value,
-    rememberMe: rememberMe.value
+
+  axios({
+    method: 'POST',
+    url: `${env('VITE_API_ENDPOINT')}user/login`,
+    withCredentials: true,
+    params: {
+      email: email.value,
+      password: password.value
+    }
   })
+    .then(() => {
+      location.href = '/'
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 </script>
 
@@ -38,15 +50,7 @@ const handleSubmit = () => {
             class="w-full px-3 py-2 bg-[#1a4d66] text-white placeholder-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
-        <div class="flex items-center">
-          <input
-            v-model="rememberMe"
-            type="checkbox"
-            id="remember-me"
-            class="h-4 w-4 text-green-500 focus:ring-green-500 border-gray-300 rounded"
-          />
-          <label for="remember-me" class="ml-2 block text-sm text-gray-400">Remember me</label>
-        </div>
+
         <div>
           <button
             type="submit"
